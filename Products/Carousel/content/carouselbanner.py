@@ -52,12 +52,19 @@ CarouselBannerSchema = link.ATLinkSchema.copy() + atapi.Schema((
         ),
     ),
 
+    atapi.TextField('vimeo_url',
+                    required=False,
+                    searchable=False,
+                    default = "http://",
+
+                    ),
 ))
 
 # Set storage on fields copied from ATContentTypeSchema, making sure
 # they work well with the python bridge properties.
 
 CarouselBannerSchema['title'].storage = atapi.AnnotationStorage()
+CarouselBannerSchema['vimeo_url'].storage = atapi.AnnotationStorage()
 CarouselBannerSchema['description'].storage = atapi.AnnotationStorage()
 CarouselBannerSchema['description'].widget.visible = {
     'view': 'hidden', 
@@ -77,6 +84,8 @@ class CarouselBanner(link.ATLink):
 
     title = atapi.ATFieldProperty('title')
     description = atapi.ATFieldProperty('description')
+
+    vimeo_url = atapi.ATFieldProperty('vimeo_url')
     
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
 
@@ -103,6 +112,24 @@ class CarouselBanner(link.ATLink):
                 return image
     
         return super(CarouselBanner, self).__bobo_traverse__(REQUEST, name)
-    
+
+    def get_vimeo_url(self, scale=None):
+        url = None
+        if self.vimeo_url and 'vimeo' in self.vimeo_url:
+            url = self.vimeo_url.replace('http://vimeo.com/','http://player.vimeo.com/video/')
+            url += '?byline=0&amp;badge=0&amp;loop=1'
+        return url
+
+    def get_width_video(self, scale=None):
+        width = '800'
+        if self.text and len(str(self.text).strip())>0:
+            width = '600'
+        return width
+
+    def get_height_video(self, scale=None):
+        height = '500'
+        if self.text and len(str(self.text).strip())>0:
+            height = '450'
+        return height
 
 atapi.registerType(CarouselBanner, PROJECTNAME)

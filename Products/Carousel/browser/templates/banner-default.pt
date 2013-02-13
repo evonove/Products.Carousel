@@ -7,9 +7,9 @@
                 has_link_url python:link_url and not link_url == 'http://';
                 image_url banner/getImageUrl;
                 has_image_url python:image_url and not image_url == 'http://';">
-            <a tal:define="image banner/getImage; lazyload settings/lazyload;"
+            <a tal:define="image banner/getImage; lazyload settings/lazyload; vimeo_url banner/get_vimeo_url|nothing;"
                 tal:omit-tag="not:has_link_url"
-                tal:condition="python:'image' in elements and (image or has_image_url)"
+                tal:condition="python:'image' in elements and (image or has_image_url) and not vimeo_url"
                 tal:attributes="href link_url;
                     title banner/Title;"
                 class="carousel-image">
@@ -41,6 +41,14 @@
                     </tal:lazy>
                 </span>
             </a>
+            <iframe tal:define="vimeo_url banner/get_vimeo_url|nothing; video_width banner/get_width_video; video_height banner/get_height_video;"
+                    tal:condition="vimeo_url"
+                    tal:attributes="src vimeo_url; height video_height; width video_width"
+                    frameborder="0"
+                    webkitAllowFullScreen="webkitallowfullscreen"
+                    mozallowfullscreen="mozallowfullscreen"
+                    allowFullScreen="allowFullScreen"
+                    class="carousel-video"></iframe>
             <div tal:define="text banner/getText|nothing;"
                 tal:condition="python:'title' in elements or ('text' in elements and text)"
                 class="carousel-text">
@@ -57,6 +65,23 @@
                     tal:content="structure text"
                     class="carousel-body">
                     Body text
+                </div>
+
+                <div id="category"
+                     class="documentByLine"
+                     tal:define="categories banner/Subject|nothing;
+                            url_quote  nocall:modules/Products.PythonScripts.standard/url_quote;"
+                     tal:condition="categories">
+                    <tal:filedunder i18n:translate="label_filed_under">Filed under:</tal:filedunder>
+                    <span tal:repeat="category categories">
+                        <a href=""
+                           class="link-category"
+                           rel="tag"
+                           tal:content="category"
+                           tal:define="quotedCat python:url_quote(category)">
+                            Category
+                        </a><span class="separator" tal:condition="not: repeat/category/end">,</span>
+                    </span>
                 </div>
             </div>
             <a tal:attributes="href link_url;"
