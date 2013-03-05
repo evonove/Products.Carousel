@@ -79,7 +79,7 @@ class CarouselViewlet(ViewletBase):
             carousel
         )
 
-        width, height = banners[0].getSize()
+        width, height = banners[0].getSize(scale="large")
         self.height = settings.height or height or 0
         self.width = settings.width or width or 0
         self.transition = settings.transition_type

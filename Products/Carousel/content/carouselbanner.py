@@ -23,7 +23,9 @@ CarouselBannerSchema = link.ATLinkSchema.copy() + atapi.Schema((
         storage = atapi.AnnotationStorage(),
         languageIndependent = True,
         max_size = zconf.ATNewsItem.max_image_dimension,
-        sizes= { },
+        sizes= {
+            "large": (768, 768),
+        },
         validators = (('isNonEmptyFile', V_REQUIRED),
                       ('checkNewsImageMaxSize', V_REQUIRED)),
         widget = atapi.ImageWidget(
@@ -131,5 +133,11 @@ class CarouselBanner(link.ATLink):
         if self.text and len(str(self.text).strip())>0:
             height = '450'
         return height
+
+    def get_image_width(self, scale=None):
+        return self.getSize(scale=scale)[0]
+
+    def get_image_height(self, scale=None):
+        return self.getSize(scale=scale)[1]
 
 atapi.registerType(CarouselBanner, PROJECTNAME)
